@@ -100,7 +100,10 @@
          <item>
           <widget class="QLineEdit" name="humLineEdit">
            <property name="text">
-            <string/>
+            <string>10</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>

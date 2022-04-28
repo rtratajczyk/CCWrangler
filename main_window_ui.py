@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import QIntValidator
 
 
 class Ui_MainWindow(object):
@@ -45,11 +46,13 @@ class Ui_MainWindow(object):
         self.tempLineEdit = QtWidgets.QLineEdit(self.layoutWidget)
         self.tempLineEdit.setText("")
         self.tempLineEdit.setAlignment(QtCore.Qt.AlignCenter)
+        tempValidator = QIntValidator(-40, 190, self)
+        self.tempLineEdit.setValidator(tempValidator)
         self.tempLineEdit.setObjectName("tempLineEdit")
         self.verticalLayout_3.addWidget(self.tempLineEdit)
         self.tempDial = QtWidgets.QDial(self.layoutWidget)
         self.tempDial.setMinimum(-40)
-        self.tempDial.setMaximum(180)
+        self.tempDial.setMaximum(190)
         self.tempDial.setSliderPosition(25)
         self.tempDial.setObjectName("tempDial")
         self.verticalLayout_3.addWidget(self.tempDial)
@@ -63,11 +66,13 @@ class Ui_MainWindow(object):
         self.humLineEdit = QtWidgets.QLineEdit(self.layoutWidget)
         self.humLineEdit.setText("")
         self.humLineEdit.setAlignment(QtCore.Qt.AlignCenter)
+        humValidator = QIntValidator(10,98, self)
+        self.humLineEdit.setValidator(humValidator)
         self.humLineEdit.setObjectName("humLineEdit")
         self.verticalLayout_4.addWidget(self.humLineEdit)
         self.humDial = QtWidgets.QDial(self.layoutWidget)
         self.humDial.setMinimum(10)
-        self.humDial.setMaximum(100)
+        self.humDial.setMaximum(98)
         self.humDial.setObjectName("humDial")
         self.verticalLayout_4.addWidget(self.humDial)
         self.horizontalLayout_2.addLayout(self.verticalLayout_4)
@@ -122,6 +127,8 @@ class Ui_MainWindow(object):
         self.refreshButton.clicked.connect(MainWindow.refresh)
         self.humDial.valueChanged.connect(MainWindow.humChange)
         self.tempDial.valueChanged.connect(MainWindow.tempChange)
+        #self.humLineEdit.textEdited.connect(MainWindow.humLineChange)
+        #self.tempLineEdit.textEdited.connect(MainWindow.tempLineChange)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

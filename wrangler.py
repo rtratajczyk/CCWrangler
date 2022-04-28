@@ -28,8 +28,13 @@ class Window(QMainWindow, Ui_MainWindow):
     # def connect(self):
 
     def setParameters(self):
-        self.statusLabel.setText("Parameters sent to chamber! New target"
-                                 " temperature: " + str(self.temp) + " degrees Celsius; new target humidity: " + str(self.hum) + "%.")
+        self.tempLineFix()
+        self.humLineFix()
+
+        self.temp = int(self.tempLineEdit.text())
+        self.hum = int(self.humLineEdit.text())
+        self.statusLabel.setText("Parameters sent to chamber! Current target"
+                                 " temperature: " + str(self.temp) + " degrees Celsius; current target humidity: " + str(self.hum) + "%. Please stand by.")
         self.lcdTemp.display(self.temp)
         self.lcdHum.display(self.hum)
 
@@ -44,6 +49,24 @@ class Window(QMainWindow, Ui_MainWindow):
     def tempChange(self):
         self.temp = self.tempDial.value()
         self.tempLineEdit.setText(str(self.temp))
+
+    def humLineFix(self):
+        if int(self.humLineEdit.text()) > 98:
+            self.humLineEdit.setText("98")
+            return 1
+        elif int(self.humLineEdit.text()) < 10:
+            self.humLineEdit.setText("10")
+            return 2
+
+    def tempLineFix(self):
+        if int(self.tempLineEdit.text()) > 190:
+            self.tempLineEdit.setText("190")
+            return 1
+        elif int(self.tempLineEdit.text()) < -40:
+            self.tempLineEdit.setText("-40")
+            return 2
+
+
 
 
 if __name__ == "__main__":

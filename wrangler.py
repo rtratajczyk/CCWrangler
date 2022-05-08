@@ -15,17 +15,38 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(5)
+        self.connect(s)
         #self.connectSignalsSlots(self)
 
     temp = 25   # temperature and humidity variables are initiated to their default values.
     hum = 10
+
 
     #def connectSignalsSlots(self):
         #self.action_Exit.triggered.connect(self.close)
         #self.action_Find_Replace.triggered.connect(self.findAndReplace)
         #self.action_About.triggered.connect(self.about)
 
-    # def connect(self):
+    def connect(self, sock):
+        self.statusLabel.setText("Now attempting to connect to the Climatic Chamber...")
+        try:
+            sock.connect(('10.10.21.238',
+                       2049))  # Attempting to connect to the socket to the climatic chamber. Address hardcoded.
+        except socket.timeout:
+            self.statusLabel.setText("Cannot connect to the climatic chamber. Please make sure that it is turned on, "
+                  " connected to the network, set to external control and then run the script again.")
+            #time.sleep(10)  # To give user time to read the error message.
+            #quit()
+        if sock.getpeername() == ('10.10.21.238', 2049):  # Double check if we are definitely connected to the chamber.
+            self.statusLabel.setText("Successfully connected with the climatic chamber!")
+        else:
+            self.statusLabel.setText("Connected to something, but the IP address is not what was expected."
+                                     " Please investigate this problem and retry.")
+            #time.sleep(10)  # To give user time to read the error message.
+            #quit()
+
 
     def setParameters(self):
         self.tempLineFix()

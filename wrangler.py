@@ -8,16 +8,16 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.uic import loadUi
 
-from main_window_ui import Ui_MainWindow
+from main_window_new_ui import Ui_MainWindow
 
 
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(5)
-        self.connect(s)
+        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #s.settimeout(5)
+        #self.connect(s)
         #self.connectSignalsSlots(self)
 
     temp = 25   # temperature and humidity variables are initiated to their default values.

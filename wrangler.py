@@ -15,37 +15,44 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setupUi(self)
-        #s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #s.settimeout(5)
+
         #self.connect(s)
         #self.connectSignalsSlots(self)
 
     temp = 25   # temperature and humidity variables are initiated to their default values.
     hum = 10
-
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(1)
+    connected = False
 
     #def connectSignalsSlots(self):
         #self.action_Exit.triggered.connect(self.close)
         #self.action_Find_Replace.triggered.connect(self.findAndReplace)
         #self.action_About.triggered.connect(self.about)
 
-    def connect(self, sock):
+    def connToCC(self):
+        print("Trying to connect...")
+        if(self.connected == False):
+            self.sock.close()
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.settimeout(1)
         self.statusLabel.setText("Now attempting to connect to the Climatic Chamber...")
         try:
-            sock.connect(('10.10.21.238',
-                       2049))  # Attempting to connect to the socket to the climatic chamber. Address hardcoded.
+            print('Trying to connect to ' + self.ipLineEdit.text())
+            self.sock.connect((self.ipLineEdit.text(), 2049))  # Attempting to connect to the socket to the climatic chamber. Address grabbed from input.
         except socket.timeout:
-            self.statusLabel.setText("Cannot connect to the climatic chamber. Please make sure that it is turned on, "
-                  " connected to the network, set to external control and then run the script again.")
-            #time.sleep(10)  # To give user time to read the error message.
+            print("oops cant connect huh")
+
+            self.statusLabel.setText("Cannot connect to the climatic chamber. Is it on and is the address correct?")
+            #time.sleep(3)  # To give user time to read the error message.
             #quit()
-        if sock.getpeername() == ('10.10.21.238', 2049):  # Double check if we are definitely connected to the chamber.
+        """if self.sock.getpeername() == (self.ipLineEdit.text(), 2049):  # Double check if we are definitely connected to the chamber.
             self.statusLabel.setText("Successfully connected with the climatic chamber!")
         else:
             self.statusLabel.setText("Connected to something, but the IP address is not what was expected."
                                      " Please investigate this problem and retry.")
             #time.sleep(10)  # To give user time to read the error message.
-            #quit()
+            #quit()"""
 
 
     def setParameters(self):
@@ -54,12 +61,26 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.temp = int(self.tempLineEdit.text())
         self.hum = int(self.humLineEdit.text())
+        print("Now setting the temperature to " + str(self.temp) + " and humidity to " + str(self.hum))
+        message = "$01E " + str(self.temp) + " " + str(self.hum) + " 100 1200 010000000000000000000 \r"
+        self.sock.sendall(message.encode("ascii"))
+
         self.statusLabel.setText("Parameters sent to chamber! Current target"
                                  " temperature: " + str(self.temp) + " degrees Celsius; current target humidity: " + str(self.hum) + "%. Please stand by.")
         self.lcdTemp.display(self.temp)
         self.lcdHum.display(self.hum)
 
     def refresh(self):
+        message = "$01I \r"  # This string asks the chamber for its current values.
+        self.sock.sendall(message.encode("ascii"))
+        response = self.sock.recv(4096).decode()
+        # print("Response: " + str(response))
+
+        split_response = response.split(" ")
+        self.temp = split_response[1]
+        self.hum = split_response[2]
+        self.lcdTemp.display(self.temp)
+        self.lcdHum.display(self.hum)
         print("Refreshed!")
         self.statusLabel.setText("Parameters refreshed.")
 

@@ -54,35 +54,40 @@ class Window(QMainWindow, Ui_MainWindow):
             #time.sleep(10)  # To give user time to read the error message.
             #quit()"""
 
-
     def setParameters(self):
-        self.tempLineFix()
-        self.humLineFix()
+        if self.connected:
+            self.tempLineFix()
+            self.humLineFix()
 
-        self.temp = int(self.tempLineEdit.text())
-        self.hum = int(self.humLineEdit.text())
-        print("Now setting the temperature to " + str(self.temp) + " and humidity to " + str(self.hum))
-        message = "$01E " + str(self.temp) + " " + str(self.hum) + " 100 1200 010000000000000000000 \r"
-        self.sock.sendall(message.encode("ascii"))
+            self.temp = int(self.tempLineEdit.text())
+            self.hum = int(self.humLineEdit.text())
+            print("Now setting the temperature to " + str(self.temp) + " and humidity to " + str(self.hum))
+            message = "$01E " + str(self.temp) + " " + str(self.hum) + " 100 1200 010000000000000000000 \r"
+            self.sock.sendall(message.encode("ascii"))
 
-        self.statusLabel.setText("Parameters sent to chamber! Current target"
+            self.statusLabel.setText("Parameters sent to chamber! Current target"
                                  " temperature: " + str(self.temp) + " degrees Celsius; current target humidity: " + str(self.hum) + "%. Please stand by.")
-        self.lcdTemp.display(self.temp)
-        self.lcdHum.display(self.hum)
+            self.lcdTemp.display(self.temp)
+            self.lcdHum.display(self.hum)
+        else:
+            self.statusLabel.setText("To set parameters, please connect to the chamber first.")
 
     def refresh(self):
-        message = "$01I \r"  # This string asks the chamber for its current values.
-        self.sock.sendall(message.encode("ascii"))
-        response = self.sock.recv(4096).decode()
-        # print("Response: " + str(response))
+        if self.connected:
+            message = "$01I \r"  # This string asks the chamber for its current values.
+            self.sock.sendall(message.encode("ascii"))
+            response = self.sock.recv(4096).decode()
+            # print("Response: " + str(response))
 
-        split_response = response.split(" ")
-        self.temp = split_response[1]
-        self.hum = split_response[2]
-        self.lcdTemp.display(self.temp)
-        self.lcdHum.display(self.hum)
-        print("Refreshed!")
-        self.statusLabel.setText("Parameters refreshed.")
+            split_response = response.split(" ")
+            self.temp = split_response[2]
+            self.hum = split_response[4]
+            self.lcdTemp.display(self.temp)
+            self.lcdHum.display(self.hum)
+            # print("Refreshed!")
+            self.statusLabel.setText("Parameters refreshed.")
+        else:
+            self.statusLabel.setText("To refresh parameters, please connect to the chamber first.")
 
     def humChange(self):
         self.hum = self.humDial.value()
@@ -107,8 +112,6 @@ class Window(QMainWindow, Ui_MainWindow):
         elif int(self.tempLineEdit.text()) < -40:
             self.tempLineEdit.setText("-40")
             return 2
-
-
 
 
 if __name__ == "__main__":

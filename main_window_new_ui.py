@@ -149,11 +149,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.setButton.setText(_translate("MainWindow", "Set parameters"))
-        self.label_5.setText(_translate("MainWindow", "SET"))
+        self.label_5.setText(_translate("MainWindow", "SETTING"))
         self.label.setText(_translate("MainWindow", "Temperature [°C]"))
         self.label_2.setText(_translate("MainWindow", "Humidity [%]"))
         self.label_3.setText(_translate("MainWindow", "Temperature [°C]"))
-        self.label_6.setText(_translate("MainWindow", "CURRENT"))
+        self.label_6.setText(_translate("MainWindow", "ACTUAL"))
         self.label_4.setText(_translate("MainWindow", "Humidity [%]"))
         self.refreshButton.setText(_translate("MainWindow", "Refresh"))
         self.tempLineEdit.setText("25")
